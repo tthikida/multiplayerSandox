@@ -7,22 +7,42 @@ public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float speed = 1.0f;
 
-    private NetworkVariable<int> randomNumber = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    // Start is called before the first frame update
-    void Start()
+    private NetworkVariable<MyCustomData> randomNumber = new NetworkVariable<MyCustomData>(
+        new MyCustomData
+        {
+            _int = 42,
+            _bool = true,
+        },
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner
+        );
+
+    public struct MyCustomData
     {
-        
+        public int _int;
+        public bool _bool;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        randomNumber.OnValueChanged += (MyCustomData previousNum, MyCustomData newNum) =>
+        {
+            Debug.Log(OwnerClientId + ": " + newNum._int + ", " + newNum._bool);
+        };
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(OwnerClientId + ": " + randomNumber.Value);
         if (!IsOwner) return;
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            randomNumber.Value = Random.Range(0, 100);
+            randomNumber.Value = new MyCustomData
+            {
+                _int = Random.Range(0,100),
+                _bool = false,
+            };
         }
 
         if (Input.GetKey(KeyCode.A))
