@@ -6,6 +6,8 @@ using Unity.Netcode;
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float speed = 1.0f;
+
+    private NetworkVariable<int> randomNumber = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // Start is called before the first frame update
     void Start()
     {
@@ -15,6 +17,14 @@ public class PlayerController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(OwnerClientId + ": " + randomNumber.Value);
+        if (!IsOwner) return;
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            randomNumber.Value = Random.Range(0, 100);
+        }
+
         if (Input.GetKey(KeyCode.A))
         {
             transform.position += new Vector3(-1f * Time.deltaTime * speed, 0, 0);
