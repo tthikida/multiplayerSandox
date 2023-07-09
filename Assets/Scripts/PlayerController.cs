@@ -17,10 +17,16 @@ public class PlayerController : NetworkBehaviour
         NetworkVariableWritePermission.Owner
         );
 
-    public struct MyCustomData
+    public struct MyCustomData : INetworkSerializable
     {
         public int _int;
         public bool _bool;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref _int);
+            serializer.SerializeValue(ref _bool);
+        }
     }
 
     public override void OnNetworkSpawn()
