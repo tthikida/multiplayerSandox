@@ -12,6 +12,7 @@ public class PlayerController : NetworkBehaviour
         {
             _int = 42,
             _bool = true,
+            message = "Ichiban",
         },
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner
@@ -21,11 +22,13 @@ public class PlayerController : NetworkBehaviour
     {
         public int _int;
         public bool _bool;
+        public string message;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref _int);
             serializer.SerializeValue(ref _bool);
+            serializer.SerializeValue(ref message);
         }
     }
 
@@ -33,7 +36,7 @@ public class PlayerController : NetworkBehaviour
     {
         randomNumber.OnValueChanged += (MyCustomData previousNum, MyCustomData newNum) =>
         {
-            Debug.Log(OwnerClientId + ": " + newNum._int + ", " + newNum._bool);
+            Debug.Log(OwnerClientId + ": " + newNum._int + ", " + newNum._bool + ", " + newNum.message);
         };
     }
 
@@ -48,6 +51,7 @@ public class PlayerController : NetworkBehaviour
             {
                 _int = Random.Range(0,100),
                 _bool = false,
+                message = "Wakka wakka do do ya!",
             };
         }
 
