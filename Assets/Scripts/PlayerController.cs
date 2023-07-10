@@ -6,12 +6,18 @@ using Unity.Netcode;
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float speed = 1.0f;
+    [SerializeField] private float x = 0;
+    [SerializeField] private float y = 0;
+    [SerializeField] private float z = 0;
+    [SerializeField] private float w = 0;
+    [SerializeField] private float turnSpeed = 250f;
+    [SerializeField] private float fwdSpeed = 5f;
 
     private NetworkVariable<MyCustomData> randomNumber = new NetworkVariable<MyCustomData>(
         new MyCustomData
         {
-            _int = 42,
-            _bool = true,
+            _int    = 42,
+            _bool   = true,
             message = "Ichiban",
         },
         NetworkVariableReadPermission.Everyone,
@@ -20,8 +26,8 @@ public class PlayerController : NetworkBehaviour
 
     public struct MyCustomData : INetworkSerializable
     {
-        public int _int;
-        public bool _bool;
+        public int    _int;
+        public bool   _bool;
         public string message;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -40,7 +46,6 @@ public class PlayerController : NetworkBehaviour
         };
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!IsOwner) return;
@@ -49,27 +54,27 @@ public class PlayerController : NetworkBehaviour
         {
             randomNumber.Value = new MyCustomData
             {
-                _int = Random.Range(0,100),
-                _bool = false,
+                _int    = Random.Range(0,100),
+                _bool   = false,
                 message = "Wakka wakka do do ya!",
             };
         }
-
+        
         if (Input.GetKey(KeyCode.A))
         {
-            transform.position += new Vector3(-1f * Time.deltaTime * speed, 0, 0);
+            transform.Rotate(new Vector3(0, 0, 1 * turnSpeed * Time.deltaTime));
         }
         if (Input.GetKey(KeyCode.D))
         {
-            transform.position += new Vector3(1f * Time.deltaTime * speed, 0, 0);
+            transform.Rotate(new Vector3(0, 0, -1 * turnSpeed * Time.deltaTime));
         }
         if (Input.GetKey(KeyCode.W))
         {
-            transform.position += new Vector3(0, 1f * Time.deltaTime * speed, 0);
+            transform.position += transform.up * fwdSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            transform.position += new Vector3(0,-1f * Time.deltaTime * speed, 0);
+            transform.position += transform.up * -fwdSpeed * Time.deltaTime;
         }
     }
 }
